@@ -1,0 +1,33 @@
+{
+  "name": "enex-dumper",
+  "version": "0.0.1",
+  "description": "Create Evernote export file (enex) from HTML notes and resources",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint -c .eslintrc.js --ext .ts src"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.17",
+    "@types/node": "^14.14.10",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.14.0",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sspeiser/enex-dumper.git"
+  },
+  "author": "Sebastian Speiser",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sspeiser/enex-dumper/issues"
+  },
+  "homepage": "https://github.com/sspeiser/enex-dumper#readme"
+}
