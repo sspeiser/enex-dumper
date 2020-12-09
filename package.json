@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.17",
+    "@types/jsdom": "^16.2.5",
     "@types/node": "^14.14.10",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
@@ -30,5 +31,11 @@
   "bugs": {
     "url": "https://github.com/sspeiser/enex-dumper/issues"
   },
-  "homepage": "https://github.com/sspeiser/enex-dumper#readme"
+  "homepage": "https://github.com/sspeiser/enex-dumper#readme",
+  "dependencies": {
+    "date-fns": "^2.16.1",
+    "jsdom": "^16.4.0",
+    "rxjs": "^6.6.3",
+    "web-streams-polyfill": "^3.0.1"
+  }
 }
