@@ -86,5 +86,27 @@ export class Note implements LoadableProperties {
     }
 }
 
-abstract class Resource {
+abstract class Resource implements LoadableProperties {
+        public load(): void {
+            return;
+        }
+        
+        private loaded = false;
+        public isLoaded(): boolean {
+            return this.loaded;
+        }
+        public awaitLoad(): void {
+            this.load();
+            this.loaded = true;
+        }
+    
+        @ensureLoaded()
+        public id?: string;
+        @ensureLoaded()
+        public dataStream?: ReadableStream;
+        @ensureLoaded()
+        public filename?: string;
+        @ensureLoaded()
+        public mimetype?: string;
+        
 }
