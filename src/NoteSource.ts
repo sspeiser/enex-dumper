@@ -1,90 +1,73 @@
 
 
-interface LoadableProperties {
-    isLoaded(): boolean;
-    awaitLoad(): void;
-}
+class Loadable<T> {
+    o: T;
+    loaded = false;
 
-function ensureLoaded<T>() {
-    return function (target: LoadableProperties, propertyKey: string) {
-        let value: T;
-        const getter = function () {
-            if (value) return value;
-            if (target.isLoaded()) return undefined;
-            target.awaitLoad();
-            return value;
-        };
-        const setter = function (newVal: T) {
-            value = newVal;
-        };
-        Object.defineProperty(target, propertyKey, {
-            get: getter,
-            set: setter
-        });
+    constructor(o: T, private load?: (o: T) => void) {
+        this.o = o;
     }
-}
 
-
-export class Note implements LoadableProperties {
-    public load(): void {
-        return;
-    }
-    // } Promise<void> {
-    //     return new Promise((resolve) => resolve());
-    // }
-
-    private loaded = false;
-    public isLoaded(): boolean {
-        return this.loaded;
-    }
     public awaitLoad(): void {
-        this.load();
+        if (!this.loaded && this.load) {
+            this.load(this.o);
+        }
         this.loaded = true;
     }
+}
 
-    @ensureLoaded()
-    public title?: string;
-    @ensureLoaded()
-    public content?: HTMLDocument;
-    @ensureLoaded()
-    public author?: string;
-    @ensureLoaded()
-    public tags: string[] = [];
-    @ensureLoaded()
-    public resources: Resource[] = [];
-    @ensureLoaded()
-    public created?: Date;
-    @ensureLoaded()
-    public updated?: Date;
-    @ensureLoaded()
-    public latitude?: number;
-    @ensureLoaded()
-    public longitude?: number;
-
-    constructor(props?: Partial<{
-        title?: string,
-        content?: HTMLDocument,
-        author?: string,
-        tags: string[],
-        resources: Resource[],
-        created?: Date,
-        updated?: Date,
-        latitude?: number,
-        longitude?: number
-    }>) {
-        if (props) {
-            if (props.title) this.title = props.title;
-            if (props.content) this.content = props.content;
-            if (props.author) this.author = props.author;
-            if (props.tags) this.tags = props.tags;
-            if (props.resources) this.resources = props.resources;
-            if (props.created) this.created = props.created;
-            if (props.updated) this.updated = props.updated;
-            if (props.latitude) this.latitude = props.latitude;
-            if (props.longitude) this.longitude = props.longitude;
+function loadable<T>(properties: Record<keyof T, undefined>) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return function <U extends T>(o: T, load?: (o: T) => void): T {
+        const l = new Loadable<T>(o, load);
+        for (const property of Object.keys(properties) as Array<keyof T>) {
+            Object.defineProperty(l, property, {
+                get: function () {
+                    if (l.o[property] || l.o[property] === null) return l.o[property];
+                    l.awaitLoad();
+                    return l.o[property];
+                }
+            })
         }
+        return l as unknown as T;
     }
 }
 
-abstract class Resource {
+
+export interface Note {
+    title?: string | null,
+    content?: HTMLDocument | null,
+    author?: string | null,
+    tags?: string[] | null,
+    resources?: IResource[] | null,
+    created?: Date | null,
+    updated?: Date | null,
+    latitude?: number | null,
+    longitude?: number | null
+}
+
+const propsNote: Record<keyof Note, undefined> = {
+    title: undefined, content: undefined, author: undefined,
+    tags: undefined, resources: undefined, created: undefined,
+    updated: undefined, latitude: undefined, longitude: undefined
+}
+
+const loadableNote = loadable<Note>(propsNote);
+
+export function createNote(props?: Partial<Note>, load?: (note: Note) => void): Note {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allProps:any = {};
+    for(const key of Object.keys(propsNote) as Array<keyof Note>) {
+        allProps[key] = undefined;
+    }
+    if (props) {
+        for (const key of Object.keys(props) as Array<keyof Partial<Note>>) {
+            allProps[key] = props[key];
+        }
+    }
+    return loadableNote(allProps as Note, load);
+}
+
+export interface IResource {
+    empty?: boolean;
 }
