@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { WritableStream } from 'web-streams-polyfill/ponyfill/es6';
 // import { WritableStream } from 'streams';
 import { EnexDumper } from './EnexDumper';
-import { Note } from './NoteSource';
+import { Note, createNote } from './NoteSource';
 
 
 class WritableString {
@@ -72,7 +72,7 @@ it('works to export a single note with only title', async () => {
     const enexDumper = new EnexDumper(writer);
 
     new Observable<Note>(subscriber => {
-        subscriber.next(new Note({title: "Example Title"}));
+        subscriber.next(createNote({title: "Example Title"}));
         subscriber.complete();
     }).subscribe(enexDumper);
 

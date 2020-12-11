@@ -42,13 +42,14 @@ export class NoteDumper {
             }
             str += `  </note-attributes>\n`;
         }
-    //     for(const resource of note.resources) {
+    // if(note.resources) {     for(const resource of note.resources) {
     //         str += `  <resource>\n`;
     //          <!ELEMENT resource
     //    (data, mime, width?, height?, duration?, recognition?, resource-attributes?,
     //    alternate-data?)
     //         str += `  </resource>\n`;
     //     }
+    // }
 
         str += `</note>`;
         return str;
