@@ -1,5 +1,3 @@
-
-
 class Loadable<T> {
     o: T;
     loaded = false;
@@ -26,6 +24,9 @@ function loadable<T>(properties: Record<keyof T, undefined>) {
                     if (l.o[property] || l.o[property] === null) return l.o[property];
                     l.awaitLoad();
                     return l.o[property];
+                },
+                set: function (value) {
+                    l.o[property] = value;
                 }
             })
         }
@@ -39,7 +40,7 @@ export interface Note {
     content?: HTMLDocument | null,
     author?: string | null,
     tags?: string[] | null,
-    resources?: IResource[] | null,
+    resources?: Resource[] | null,
     created?: Date | null,
     updated?: Date | null,
     latitude?: number | null,
@@ -69,9 +70,41 @@ export function createNote(props?: Partial<Note>, load?: (note: Note) => void): 
 }
 
 export interface Resource {
-    id?: string | null;
-    dataStream?: ReadableStream | null;
-    filename?: string | null;
-    mimetype? : string | null;
+    url?: string | null,
+    dataStream?: ReadableStream | null,
+    filename?: string | null,
+    mimetype? : string | null,
+    width?: number | null,
+    height?: number | null,
+    base64data?: string | null,
+    md5? : string | null
 }
+
+const propsResource: Record<keyof Resource, undefined> = {
+    url: undefined,
+    dataStream: undefined,
+    filename: undefined,
+    mimetype: undefined,
+    width: undefined,
+    height: undefined,
+    base64data: undefined,
+    md5: undefined
+}
+
+const loadableResource = loadable<Resource>(propsResource);
+
+export function createResource(props?: Partial<Resource>, load?: (resource: Resource) => void): Resource {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allProps:any = {};
+    for(const key of Object.keys(propsResource) as Array<keyof Resource>) {
+        allProps[key] = undefined;
+    }
+    if (props) {
+        for (const key of Object.keys(props) as Array<keyof Partial<Resource>>) {
+            allProps[key] = props[key];
+        }
+    }
+    return loadableResource(allProps as Resource, load);
+}
+
 
