@@ -6,8 +6,8 @@ import { dumpNote } from "./NoteDumper";
 
 
 export type StringWriter = {
-    write(str: string): Promise<void>;
-    close(): Promise<void>;
+    write(str: string): void;
+    close(): void;
 }
 
 export class EnexDumper implements Observer<Note> {
@@ -16,17 +16,21 @@ export class EnexDumper implements Observer<Note> {
     readonly done;
     private resolve?: () => void;
 
-    constructor(private writer: WritableStreamDefaultWriter<string | void>, private options: EnexDumperOptions = new EnexDumperOptions()) {
+    constructor(private writer: StringWriter, private options: EnexDumperOptions = new EnexDumperOptions()) {
         this.done = new Promise<void>((resolve) => this.resolve = resolve);
-        this.writer.ready.then(() => writer.write(`<?xml version="1.0" encoding="UTF-8"?>
+        writer.write(`<?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export3.dtd">
           <en-export export-date="${format(new Date(), options.dateFormat)}" application="${options.exportApplication}" version="${options.exportApplicationVersion}">`
-        ));
+        );
     }
 
     next(note: Note): void {
         this.noteDumps.push(dumpNote(note, this.options).then((notestr) => {
-            return this.writer.ready.then(() => this.writer.write(notestr)).catch(console.log);
+            try {
+                this.writer.write(notestr)
+            } catch(error) {
+                console.log(`Error ${error} while writing dump ${notestr}`);
+            }
         }));
     }
 
@@ -36,13 +40,14 @@ export class EnexDumper implements Observer<Note> {
     }
 
     complete(): void {
-        Promise.all(this.noteDumps).
-            then(() => {
-                this.writer.ready.then(() => this.writer.write('</en-export>')).then(() => {
-                    this.writer.ready.then(() => this.writer.close())
-                }).catch(console.log);
-            }).then(() => {
-                if (this.resolve) this.resolve()
-            });
+        Promise.all(this.noteDumps).then(() => {
+            try {
+                this.writer.write('</en-export>');
+                this.writer.close();
+            } catch(error) {
+                console.log(`Error ${error} while completing after dumping ${this.noteDumps.length} notes`);
+            }
+            if (this.resolve) this.resolve();
+        })
     }
 }

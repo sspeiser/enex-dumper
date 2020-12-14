@@ -39,7 +39,6 @@ it('works to dump a textual resource', async () => {
     const stream = stringToStream(testData);
     const resource = createResource({dataStream: stream});
     const dump = await dumpResource(resource, defaultOptions);
-    console.log(dump);
     expect(resource.base64data).toEqual("SGFsbG8gV2VsdCE=");
     expect(resource.md5).toEqual("55243ecf175013cfe9890023f9fd9037");
     expect(dump).toContain("<resource>");
@@ -47,15 +46,15 @@ it('works to dump a textual resource', async () => {
 });
 
 
-it('works to dump a textual resource', async () => {
-    const testData = fs.readFileSync('test/data/20mb.zip');
+it('works to dump a large resource', async () => {
+    const testData = fs.readFileSync('testdata/data/20mb.zip');
     const stream = arrayToStream(testData);
     const resource = createResource({dataStream: stream, filename: '20mb.zip'});
     const dump = await dumpResource(resource, defaultOptions);
     
-    expect(resource.base64data?.startsWith("eZn1CcXCyE4290Quzu55")).toBeTruthy();
-    expect(resource.base64data?.endsWith("JHlrSk/+HyRDZTeMJQLqkfE=")).toBeTruthy();
-    expect(resource.md5).toEqual("b3215c06647bc550406a9c8ccc378756");
+    expect(resource.base64data?.startsWith("UEsDBBQAAAAIANi580TC")).toBeTruthy();
+    expect(resource.base64data?.endsWith("AEAAQBKAAAAKuo+AQAA")).toBeTruthy();
+    expect(resource.md5).toEqual("e91b5bbf9a9bacc563541361ebad1392");
     expect(dump).toContain("<resource>");
     // TODO fruther tests
 });

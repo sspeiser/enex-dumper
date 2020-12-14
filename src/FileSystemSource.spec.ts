@@ -2,7 +2,6 @@ import { EnexDumperOptions } from './EnexDumperOptions';
 import { EnexDumper } from './EnexDumper';
 import { recursiveHTMLDumper, WritableFile } from './FileSystemSource';
 import { downloadTestFiles } from './downloadTestFiles.spec';
-import fs = require('fs');
 
 
 /**
@@ -20,15 +19,12 @@ beforeAll(async () => {
 
 it('works somehow', async () => {
     const options = new EnexDumperOptions();
-    // streamSaver.WritableStream = ponyfill.WritableStream
-    // const fileStream = streamSaver.createWriteStream("test/output.enex");
-    const fileStream = new WritableFile("test/data/output.enex");
-    const writer = fileStream.getWriter();
+    const writer = new WritableFile("testdata/data/output.enex");
     const dumper = new EnexDumper(writer, options);
     // throw new TypeError("hook");
-    recursiveHTMLDumper('test/html', dumper);
+    recursiveHTMLDumper('testdata/html', dumper);
     await dumper.done;
-    await fileStream.result;
+    await writer.result;
     // TODO: Real test ... check for file, resources, subfolder, title for no title, ...
 }, 240_000);
 

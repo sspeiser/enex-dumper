@@ -16,7 +16,7 @@ export async function downloadTestFiles(): Promise<void> {
     
     for(const testFile of testFiles) {
         const filename = testFile.split('/').pop();
-        const path = 'test/data/' + filename;
+        const path = 'testdata/data/' + filename;
         if(!fs.existsSync(path)) {
             promises.push(new Promise<void>((resolve) => {
                 const file = fs.createWriteStream(path);
@@ -29,7 +29,6 @@ export async function downloadTestFiles(): Promise<void> {
             }));
         }
     }
-    console.log('waiting for ' + promises.length + ' promises for downloads');
     await Promise.all(promises).then(() => undefined);
 }
 
@@ -37,7 +36,7 @@ it('works to load the test files', async () => {
     await downloadTestFiles();
     for(const testFile of testFiles) {
         const filename = testFile.split('/').pop();
-        const path = 'test/data/' + filename;
+        const path = 'testdata/data/' + filename;
         expect(fs.existsSync(path)).toBeTruthy();
     }
 });

@@ -1,5 +1,0 @@
-class EnexDumper {
-    
-}
-
-export { EnexDumper };

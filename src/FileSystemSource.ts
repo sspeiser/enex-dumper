@@ -1,40 +1,31 @@
 import { Note, createNote, createResource, Resource } from './NoteSource';
-import { WritableStream, ReadableStream, CountQueuingStrategy } from 'web-streams-polyfill/ponyfill/es6';
-import { EnexDumper } from './EnexDumper';
+import { ReadableStream } from 'web-streams-polyfill/ponyfill/es6';
+import { EnexDumper, StringWriter } from './EnexDumper';
 import fs = require('fs');
 import { JSDOM } from 'jsdom';
 import ext2mime from './ext2mime';
 
 
-export class WritableFile {
-    private strings: string[] = [];
-    readonly result;
+export class WritableFile implements StringWriter {
+    readonly result: Promise<void>;
     private resolve?: () => void;
-    private writableStream: WritableStream<string | void>;
+
+    private fd: number;
 
     constructor(filename: string) {
-        const file = fs.createWriteStream(filename);
         this.result = new Promise<void>((resolve) => this.resolve = resolve);
-        const resolve = this.resolve;
-        this.writableStream = new WritableStream({
-            write(chunk) {
-                return new Promise<void>((resolve) => {
-                    if (chunk) {
-                        file.write(chunk);
-                    }
-                    resolve();
-                });
-            },
-            close() {
-                file.close();
-                if (resolve)
-                    resolve();
-            }
-        }, new CountQueuingStrategy({ highWaterMark: 1024 }));
+        this.fd = fs.openSync(filename, 'w');
     }
 
-    public getWriter(): WritableStreamDefaultWriter {
-        return this.writableStream.getWriter();
+    public write(str: string): void {
+        fs.writeSync(this.fd, str);
+    }
+
+    public close(): void {
+        fs.closeSync(this.fd);
+        if (this.resolve) {
+            this.resolve();
+        }
     }
 }
 
@@ -46,8 +37,6 @@ function fileToStream(path: string) {
         }
     })
 }
-
-
 
 function loadResource(noteFile: string) {
     return async (resource: Resource) => {
@@ -89,6 +78,7 @@ function noteFromHTML(file: string): Note {
             resources.push(createResource(propsResource, loadResource(file)));
         }
     }
+    
     for (const object of document.getElementsByTagName("object")) {
         if (!object.data)
             continue;
@@ -101,9 +91,10 @@ function noteFromHTML(file: string): Note {
             resources.push(createResource(propsResource, loadResource(file)));
         }
     }
-    let author:string | null = null;
-    for(const meta of document.head.getElementsByTagName("meta")) {
-        if(meta.getAttribute('name') == 'author') {
+    let author: string | null = null;
+    
+    for (const meta of document.head.getElementsByTagName("meta")) {
+        if (meta.getAttribute('name') === 'author') {
             author = meta.getAttribute('content');
         }
     }
@@ -121,16 +112,18 @@ function noteFromHTML(file: string): Note {
 }
 
 export function recursiveHTMLDumper(path: string, dumper: EnexDumper): void {
-    const files = fs.readdirSync(path)
-    files.forEach(file => {
-        const filePath = path + '/' + file;
-        if (fs.lstatSync(filePath).isDirectory()) {
-            recursiveHTMLDumper(filePath, dumper);
+    const files = fs.readdirSync(path).map((file)=> path + '/' + file);
+    while(files.length > 0) {
+        const file = files.pop();
+        if(!file) continue;
+        if (fs.lstatSync(file).isDirectory()) {
+            Array.prototype.push.apply(files, fs.readdirSync(file).map((newfile)=>  file + '/' + newfile));
         } else {
             if (file.toLowerCase().endsWith('html')) {
-                dumper.next(noteFromHTML(filePath));
+                dumper.next(noteFromHTML(file));
             }
         }
-    });
+
+    }
     dumper.complete();
 }
