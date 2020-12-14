@@ -1,19 +1,10 @@
 import { Note, createNote, createResource, Resource } from './NoteSource';
-import { WritableStream, ReadableStream } from 'web-streams-polyfill/ponyfill/es6';
+import { WritableStream, ReadableStream, CountQueuingStrategy } from 'web-streams-polyfill/ponyfill/es6';
 import { EnexDumper } from './EnexDumper';
 import fs = require('fs');
 import { JSDOM } from 'jsdom';
-import ext2mime from 'ext2mime';
+import ext2mime from './ext2mime';
 
-
-function fileToStream(path: string) {
-    return new ReadableStream({
-        start(controller) {
-            controller.enqueue(fs.readFileSync(path));
-            controller.close();
-        }
-    })
-}
 
 export class WritableFile {
     private strings: string[] = [];
@@ -39,13 +30,24 @@ export class WritableFile {
                 if (resolve)
                     resolve();
             }
-        });
+        }, new CountQueuingStrategy({ highWaterMark: 1024 }));
     }
 
     public getWriter(): WritableStreamDefaultWriter {
         return this.writableStream.getWriter();
     }
 }
+
+function fileToStream(path: string) {
+    return new ReadableStream({
+        start(controller) {
+            controller.enqueue(fs.readFileSync(path));
+            controller.close();
+        }
+    })
+}
+
+
 
 function loadResource(noteFile: string) {
     return async (resource: Resource) => {
@@ -61,7 +63,7 @@ function loadResource(noteFile: string) {
     }
 }
 
-function escapeHTML(str: string): string {
+function escapeHTML(document: HTMLDocument, str: string): string {
     const pre = document.createElement('pre');
     const text = document.createTextNode(str);
     pre.appendChild(text);
@@ -99,8 +101,17 @@ function noteFromHTML(file: string): Note {
             resources.push(createResource(propsResource, loadResource(file)));
         }
     }
+    let author:string | null = null;
+    for(const meta of document.head.getElementsByTagName("meta")) {
+        if(meta.getAttribute('name') == 'author') {
+            author = meta.getAttribute('content');
+        }
+    }
+
     const propsNote = {
-        title: document.title || escapeHTML(file.split('/').pop() || 'No title'),
+        title: document.title || escapeHTML(document, file.split('/').pop() || 'No title'),
+        tags: [escapeHTML(document, file.replace(/\//, '.'))],
+        author: author,
         content: document,
         resources: resources,
         created: stats.ctime,

@@ -52,8 +52,6 @@ class MD5Stream {
                     if (chunk) {
                         if(chunk instanceof Uint8Array) {
                             spark.append(chunk.buffer);
-                        } else {
-                            throw new TypeError(`MD5Stream received ${chunk.constructor} but only works with Uint8Array`);
                         } 
                     }
                     resolve();
@@ -64,10 +62,6 @@ class MD5Stream {
                     resolve(spark.end());
             }
         });
-    }
-
-    public getWriter() {
-        return this.writableStream.getWriter();
     }
 }
 
@@ -87,8 +81,6 @@ class Base64Stream {
                     if (chunk) {
                         if(chunk instanceof Uint8Array) {
                             base64string += bytesToBase64(chunk);
-                        } else {
-                            throw new TypeError(`MD5Stream received ${chunk.constructor} but only works with Uint8Array`);
                         } 
                     }
                     resolve();
@@ -99,9 +91,5 @@ class Base64Stream {
                     resolve(base64string);
             }
         });
-    }
-
-    public getWriter() {
-        return this.writableStream.getWriter();
     }
 }

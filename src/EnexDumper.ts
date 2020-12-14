@@ -4,6 +4,12 @@ import { EnexDumperOptions } from './EnexDumperOptions';
 import { Note } from './NoteSource';
 import { dumpNote } from "./NoteDumper";
 
+
+export type StringWriter = {
+    write(str: string): Promise<void>;
+    close(): Promise<void>;
+}
+
 export class EnexDumper implements Observer<Note> {
     private noteDumps: Promise<boolean | void>[] = [];
 

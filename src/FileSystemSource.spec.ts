@@ -1,14 +1,21 @@
 import { EnexDumperOptions } from './EnexDumperOptions';
 import { EnexDumper } from './EnexDumper';
-import { WritableFile, recursiveHTMLDumper } from './FileSystemSource';
+import { recursiveHTMLDumper, WritableFile } from './FileSystemSource';
 import { downloadTestFiles } from './downloadTestFiles.spec';
-// import streamSaver from "streamsaver";
-// import * as ponyfill from 'web-streams-polyfill/ponyfill';
+import fs = require('fs');
+
+
+/**
+ * @jest-environment jsdom
+ */
 
 
 beforeAll(async () => {
     await downloadTestFiles();
 }, 180_000);
+
+
+
 
 
 it('works somehow', async () => {
@@ -22,6 +29,7 @@ it('works somehow', async () => {
     recursiveHTMLDumper('test/html', dumper);
     await dumper.done;
     await fileStream.result;
+    // TODO: Real test ... check for file, resources, subfolder, title for no title, ...
 }, 240_000);
 
 // TODO: Test for nonexisting file

@@ -5,6 +5,7 @@ import { dumpResource } from './ResourceDumper';
 
 
 function replaceResources(content: HTMLDocument, resources: Resource[], options: EnexDumperOptions) {
+    if(!options.resources) return;
     const urls: { [key: string]: Resource } = {};
     for (const resource of resources) {
         if (resource.url)
