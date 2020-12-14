@@ -5,7 +5,7 @@ import { dumpResource } from './ResourceDumper';
 
 
 function replaceResources(content: HTMLDocument, resources: Resource[], options: EnexDumperOptions) {
-    if(!options.resources) return;
+    if (!options.resources) return;
     const urls: { [key: string]: Resource } = {};
     for (const resource of resources) {
         if (resource.url)
@@ -14,14 +14,15 @@ function replaceResources(content: HTMLDocument, resources: Resource[], options:
 
     // console.log('How many tags are here?: ' + content.body.innerHTML);
     // console.log(`We have ${content.getElementsByTagName('img').length} images and ${content.getElementsByTagName('object').length} objects and ${resources.length} resources`);
-    
+
     const images: HTMLImageElement[] = [];
-    for(const image of content.getElementsByTagName('img')) {
+    for (const image of content.getElementsByTagName('img')) {
         images.push(image);
     }
     for (const image of images) {
         // console.log(`Replacing ${image.src} (${image.outerHTML})`);
         const resource = urls[image.src];
+        if (!resource) continue;
         const enmedia = content.createElement("en-media");
         enmedia.setAttribute("alt", resource.filename || "");
         enmedia.setAttribute("type", resource.mimetype || "");
@@ -36,13 +37,14 @@ function replaceResources(content: HTMLDocument, resources: Resource[], options:
     }
 
     const objects: HTMLObjectElement[] = [];
-    for(const object of content.getElementsByTagName('object')) {
+    for (const object of content.getElementsByTagName('object')) {
         objects.push(object);
     }
-    
+
     for (const object of objects) {
         // console.log(`Replacing ${object.data} (${object.outerHTML})`);
         const resource = urls[object.data];
+        if (!resource) continue;
         const enmedia = content.createElement("en-media");
         enmedia.setAttribute("alt", resource.filename || "");
         enmedia.setAttribute("type", resource.mimetype || "");
@@ -66,9 +68,11 @@ export async function dumpNote(note: Note, options: EnexDumperOptions): Promise<
           <title>${note.title}</title>\n`;
 
     const resourcePromises: Promise<string>[] = [];
-    if (note.resources) {
-        for (const resource of note.resources) {
-            resourcePromises.push(dumpResource(resource, options));
+    if (options.resources) {
+        if (note.resources) {
+            for (const resource of note.resources) {
+                resourcePromises.push(dumpResource(resource, options));
+            }
         }
     }
     const resourceStrings = await Promise.all(resourcePromises);
@@ -113,9 +117,11 @@ export async function dumpNote(note: Note, options: EnexDumperOptions): Promise<
         }
         str += `  </note-attributes>\n`;
     }
-    if (note.resources) {
-        for (const resourceString of resourceStrings)
-            str += resourceString;
+    if (options.resources) {
+        if (note.resources) {
+            for (const resourceString of resourceStrings)
+                str += resourceString;
+        }
     }
     str += `</note>`;
     return str;

@@ -14,16 +14,16 @@ beforeAll(async () => {
 
 const defaultOptions = new EnexDumperOptions();
 
-function arrayToStream(array: Uint8Array) {
+export function arrayToStream(array: Uint8Array): ReadableStream {
 return new ReadableStream({
     start(controller) {
         controller.enqueue(array);
         controller.close();
-    }
+    },
   })
 }
 
-function stringToStream(str: string) {
+export function stringToStream(str: string): ReadableStream {
     return arrayToStream(new TextEncoder().encode(str));
 }
 
@@ -42,7 +42,8 @@ it('works to dump a textual resource', async () => {
     expect(resource.base64data).toEqual("SGFsbG8gV2VsdCE=");
     expect(resource.md5).toEqual("55243ecf175013cfe9890023f9fd9037");
     expect(dump).toContain("<resource>");
-    // TODO fruther tests
+    const resourceRE = new RegExp(`<resource>.*<data encoding="base64">.*${resource.base64data}.*</data>.*</resource>`, 's');
+    expect(resourceRE.test(dump)).toBeTruthy();
 });
 
 
@@ -56,8 +57,4 @@ it('works to dump a large resource', async () => {
     expect(resource.base64data?.endsWith("AEAAQBKAAAAKuo+AQAA")).toBeTruthy();
     expect(resource.md5).toEqual("e91b5bbf9a9bacc563541361ebad1392");
     expect(dump).toContain("<resource>");
-    // TODO fruther tests
 });
-
-
-// TODO further tests

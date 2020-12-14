@@ -11,7 +11,7 @@ export async function dumpResource(resource: Resource, options: EnexDumperOption
     const base64stream = new Base64Stream();
     // const streamPromises: Promise<string | void>[] = [];
 
-    if (resource.dataStream) {
+    if (resource.dataStream && !resource.dataStream.locked) {
         const [md5readstream, base64readstream] = resource.dataStream.tee();
         // if (!resource.md5) {
         md5readstream.pipeTo(md5stream.writableStream);

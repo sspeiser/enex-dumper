@@ -1,9 +1,10 @@
 import { dumpNote } from './NoteDumper';
-import { createNote } from './NoteSource';
+import { createNote, createResource } from './NoteSource';
 import { JSDOM } from 'jsdom';
 import { format } from 'date-fns';
 import { EnexDumperOptions } from './EnexDumperOptions';
 import { downloadTestFiles } from './downloadTestFiles.spec';
+import { stringToStream } from './ResourceDumper.spec';
 
 beforeAll(async () => {
     await downloadTestFiles();
@@ -80,3 +81,22 @@ it('works to export a note with tags', async () => {
     expect(tagsRE.test(tagsResult)).toBeTruthy();
 });
 
+it('works to export a note with a resource', async () => {
+    const testData = "Hallo Welt!";
+
+    const stream = stringToStream(testData);
+    const resource = createResource({url: 'test.txt', dataStream: stream, base64data: "SGFsbG8gV2VsdCE=", md5: "55243ecf175013cfe9890023f9fd9037"});
+    const resourceNote = createNote({ content: new JSDOM("<html><body><object data='test.txt' /></body></html>").window.document,
+    resources: [resource]});
+
+    const resourceResult = await dumpNote(resourceNote, defaultOptions);
+    const enmediaRE = new RegExp(`<en-note>.*<en-media.*hash="${resource.md5}.*>`, 's');
+    expect(enmediaRE.test(resourceResult)).toBeTruthy();
+    const noResourceOptions = new EnexDumperOptions();
+    noResourceOptions.resources = false;
+    const noResourceResult = await dumpNote(resourceNote, noResourceOptions);
+
+    expect(noResourceResult.includes("<resource>")).toBeFalsy(); 
+    expect(noResourceResult.includes("<en-media>")).toBeFalsy(); 
+})
+    

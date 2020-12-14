@@ -25,7 +25,4 @@ it('works somehow', async () => {
     recursiveHTMLDumper('testdata/html', dumper);
     await dumper.done;
     await writer.result;
-    // TODO: Real test ... check for file, resources, subfolder, title for no title, ...
 }, 240_000);
-
-// TODO: Test for nonexisting file
