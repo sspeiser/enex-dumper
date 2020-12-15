@@ -48,17 +48,17 @@ class MD5Stream {
 
     constructor() {
         const spark = new SparkMD5.ArrayBuffer();
-        this.md5 = new Promise<string>((resolve) => this.resolve = resolve);
+        this.md5 = new Promise<string>((r) => this.resolve = r);
         const resolve = this.resolve;
         this.writableStream = new WritableStream({
             write(chunk) {
-                return new Promise<void>((resolve) => {
+                return new Promise<void>((r) => {
                     if (chunk) {
                         if (chunk instanceof Uint8Array) {
                             spark.append(chunk.buffer);
                         }
                     }
-                    resolve();
+                    r();
                 });
             },
             close() {
@@ -77,17 +77,17 @@ class Base64Stream {
 
     constructor() {
         let base64string = "";
-        this.base64data = new Promise<string>((resolve) => this.resolve = resolve);
+        this.base64data = new Promise<string>((r) => this.resolve = r);
         const resolve = this.resolve;
         this.writableStream = new WritableStream({
             write(chunk) {
-                return new Promise<void>((resolve) => {
+                return new Promise<void>((r) => {
                     if (chunk) {
                         if (chunk instanceof Uint8Array) {
                             base64string += bytesToBase64(chunk);
                         }
                     }
-                    resolve();
+                    r();
                 });
             },
             close() {
