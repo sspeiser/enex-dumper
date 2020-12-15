@@ -2,7 +2,7 @@
 export { EnexDumper } from './EnexDumper';
 // import { EnexDumperOptions } from './EnexDumperOptions';
 export { EnexDumperOptions } from './EnexDumperOptions';
-export { Note, Resource } from './NoteSource';
+export { Note, Resource, createNote, createResource } from './NoteSource';
 
 // import { recursiveHTMLDumper, WritableFile } from './FileSystemSource';
 // export { recursiveHTMLDumper, WritableFile } from './FileSystemSource';

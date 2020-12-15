@@ -61,7 +61,31 @@ function replaceResources(content: HTMLDocument, resources: Resource[], options:
 }
 
 function cleanHTML(content: HTMLDocument) {
-    // TODO
+    // Remove all forbidden elements, for now don't try to replace it with something useful
+    const forbiddenTags = ['applet', 'base', 'basefont', 'bgsound', 'blink', 'body',
+        'button', 'dir', 'embed', 'fieldset', 'form', 'frame', 'frameset', 'head',
+        'html', 'iframe', 'ilayer', 'input', 'isindex', 'label', 'layer,', 'legend',
+        'link', 'marquee', 'menu', 'meta', 'noframes', 'noscript', 'object', 'optgroup',
+        'option', 'param', 'plaintext', 'script', 'select', 'style', 'textarea', 'xml'];
+    const forbiddenElements: Element[] = [];
+    for(const tag of forbiddenTags) {
+        for(const element of content.body.getElementsByTagName(tag)) {
+            forbiddenElements.push(element);
+        }
+    }
+    forbiddenElements.forEach((element) => element.remove());
+    // Remove all forbidden attributes
+    const forbiddenAttributes = ['id', 'class', 'onclick', 'ondblclick', 'on*', 'accesskey', 'data', 'dynsrc', 'tabindex'];
+    for(const element of content.body.getElementsByTagName('*')) {
+        for(const attribute of element.attributes) {
+            if(attribute.name.startsWith('on') && !forbiddenAttributes.includes(attribute.name)) {
+                forbiddenAttributes.push(attribute.name);
+            }
+        }
+        for(const attribute of forbiddenAttributes) {
+            element.removeAttribute(attribute);
+        }
+    }
 }
 
 export async function dumpNote(note: Note, options: EnexDumperOptions): Promise<string> {
