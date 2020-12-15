@@ -4,19 +4,11 @@ import { EnexDumperOptions } from './EnexDumperOptions';
 import { ReadableStream } from 'web-streams-polyfill/ponyfill/es6';
 import fs  =require('fs');
 
-import { downloadTestFiles } from './downloadTestFiles.spec';
-
-if(!(process.env["TEST_LARGE_FILES"] === "no")) {
-    beforeAll(async () => {
-        await downloadTestFiles();
-    }, 180_000);
-}
-
-
 
 const defaultOptions = new EnexDumperOptions();
 
 export function arrayToStream(array: Uint8Array): ReadableStream {
+    
 return new ReadableStream({
     start(controller) {
         controller.enqueue(array);

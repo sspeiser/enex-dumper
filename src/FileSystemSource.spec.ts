@@ -1,21 +1,10 @@
 import { EnexDumperOptions } from './EnexDumperOptions';
 import { EnexDumper } from './EnexDumper';
 import { recursiveHTMLDumper, WritableFile } from './FileSystemSource';
-import { downloadTestFiles } from './downloadTestFiles.spec';
-
 
 /**
  * @jest-environment jsdom
  */
-
-
-beforeAll(async () => {
-    await downloadTestFiles();
-}, 180_000);
-
-
-
-
 
 it('works somehow', async () => {
     const options = new EnexDumperOptions();
