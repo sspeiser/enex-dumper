@@ -13,7 +13,7 @@ const testFiles = ['https://sample-videos.com/video123/mp4/720/big_buck_bunny_72
 ]
 export async function downloadTestFiles(): Promise<void> {
     const promises: Promise<void>[] = [];
-    
+    fs.mkdirSync('testdata/data', {recursive: true});
     for(const testFile of testFiles) {
         const filename = testFile.split('/').pop();
         const path = 'testdata/data/' + filename;
