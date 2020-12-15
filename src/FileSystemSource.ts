@@ -68,7 +68,12 @@ function noteFromHTML(file: string): Note {
     const content = fs.readFileSync(file).toString();
     const document = new JSDOM(content).window.document;
     const resources: Resource[] = [];
-    for (const image of document.getElementsByTagName("img")) {
+
+    const images: HTMLImageElement[] = [];
+    for (const image of document.getElementsByTagName('img')) {
+        images.push(image);
+    }
+    for (const image of images) {
         if (!image.src)
             continue;
         if (!image.src.includes(':') || image.src.startsWith('file:')) {
@@ -83,7 +88,11 @@ function noteFromHTML(file: string): Note {
         }
     }
 
-    for (const object of document.getElementsByTagName("object")) {
+    const objects: HTMLObjectElement[] = [];
+    for (const object of document.getElementsByTagName('object')) {
+        objects.push(object);
+    }
+    for (const object of objects) {
         if (!object.data)
             continue;
         if (!object.data.includes(':') || object.data.startsWith('file:')) {

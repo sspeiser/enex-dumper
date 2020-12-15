@@ -12,8 +12,8 @@ function replaceResources(content: HTMLDocument, resources: Resource[], options:
             urls[resource.url] = resource;
     }
 
-    // console.log('How many tags are here?: ' + content.body.innerHTML);
-    // console.log(`We have ${content.getElementsByTagName('img').length} images and ${content.getElementsByTagName('object').length} objects and ${resources.length} resources`);
+    console.log('How many tags are here?: ' + content.body.innerHTML);
+    console.log(`We have ${content.getElementsByTagName('img').length} images and ${content.getElementsByTagName('object').length} objects and ${resources.length} resources`);
 
     const images: HTMLImageElement[] = [];
     for (const image of content.getElementsByTagName('img')) {
