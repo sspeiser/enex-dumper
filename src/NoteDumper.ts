@@ -20,9 +20,10 @@ function replaceResources(content: HTMLDocument, resources: Resource[], options:
         images.push(image);
     }
     for (const image of images) {
-        // console.log(`Replacing ${image.src} (${image.outerHTML})`);
+        console.log(`Replacing ${image.src} (${image.outerHTML})`);
         const resource = urls[image.src];
         if (!resource) continue;
+        console.log(`Now creating element for ${image.src}`);
         const enmedia = content.createElement("en-media");
         enmedia.setAttribute("alt", resource.filename || "");
         enmedia.setAttribute("type", resource.mimetype || "");
