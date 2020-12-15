@@ -1,6 +1,6 @@
 {
   "name": "enex-dumper",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Create Evernote export file (enex) from HTML notes and resources",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,6 +31,7 @@
   "bugs": {
     "url": "https://github.com/sspeiser/enex-dumper/issues"
   },
+  "files": ["dist/**/*"],
   "homepage": "https://github.com/sspeiser/enex-dumper#readme",
   "dependencies": {
     "@types/spark-md5": "^3.0.2",
