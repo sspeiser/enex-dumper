@@ -19,12 +19,17 @@ export async function downloadTestFiles(): Promise<void> {
         const path = 'testdata/data/' + filename;
         if(!fs.existsSync(path)) {
             promises.push(new Promise<void>((resolve) => {
-                const file = fs.createWriteStream(path);
+                // const file = fs.createWriteStream(path);
+                const fd = fs.openSync(path, 'w');
                 https.get(testFile, (response) => {
                     response.on('data', (data) => {
-                        file.write(data);
+                        // file.write(data);
+                        fs.writeSync(fd, data);
                     });
-                    response.on('close', file.close).on('error', (error) => {
+                    response.on('close', () => {
+                        //file.close();
+                        fs.closeSync(fd);
+                    }).on('error', (error) => {
                         console.log(`Download failed for ${testFile}: ${error}`);
                         throw new Error(`${error}`);
                     });
