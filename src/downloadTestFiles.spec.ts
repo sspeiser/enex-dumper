@@ -24,8 +24,14 @@ export async function downloadTestFiles(): Promise<void> {
                     response.on('data', (data) => {
                         file.write(data);
                     });
-                    response.on('close', file.close);
-                }).on('end', () => resolve()).on('error', console.log);
+                    response.on('close', file.close).on('error', (error) => {
+                        console.log(`Download failed for ${testFile}: ${error}`);
+                        throw new Error(`${error}`);
+                    });
+                }).on('end', () => resolve()).on('error', (error) => {
+                    console.log(`Download failed for ${testFile}: ${error}`);
+                    throw new Error(`${error}`);
+                })
             }));
         }
     }
