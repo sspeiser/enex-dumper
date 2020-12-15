@@ -32,7 +32,11 @@ export class WritableFile implements StringWriter {
 function fileToStream(path: string) {
     return new ReadableStream({
         start(controller) {
-            controller.enqueue(fs.readFileSync(path));
+            try {
+                controller.enqueue(fs.readFileSync(path));
+            } catch (error) {
+                console.log(error);
+            }
             controller.close();
         }
     })
@@ -78,7 +82,7 @@ function noteFromHTML(file: string): Note {
             resources.push(createResource(propsResource, loadResource(file)));
         }
     }
-    
+
     for (const object of document.getElementsByTagName("object")) {
         if (!object.data)
             continue;
@@ -92,7 +96,7 @@ function noteFromHTML(file: string): Note {
         }
     }
     let author: string | null = null;
-    
+
     for (const meta of document.head.getElementsByTagName("meta")) {
         if (meta.getAttribute('name') === 'author') {
             author = meta.getAttribute('content');
@@ -112,12 +116,12 @@ function noteFromHTML(file: string): Note {
 }
 
 export function recursiveHTMLDumper(path: string, dumper: EnexDumper): void {
-    const files = fs.readdirSync(path).map((file)=> path + '/' + file);
-    while(files.length > 0) {
+    const files = fs.readdirSync(path).map((file) => path + '/' + file);
+    while (files.length > 0) {
         const file = files.pop();
-        if(!file) continue;
+        if (!file) continue;
         if (fs.lstatSync(file).isDirectory()) {
-            Array.prototype.push.apply(files, fs.readdirSync(file).map((newfile)=>  file + '/' + newfile));
+            Array.prototype.push.apply(files, fs.readdirSync(file).map((newfile) => file + '/' + newfile));
         } else {
             if (file.toLowerCase().endsWith('html')) {
                 dumper.next(noteFromHTML(file));
