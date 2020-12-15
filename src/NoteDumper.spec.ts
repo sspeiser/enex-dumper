@@ -95,3 +95,23 @@ it('works to export a note with a resource', async () => {
     expect(noResourceResult.includes("<en-media>")).toBeFalsy(); 
 })
     
+it('works to export a note with forbidden elements and attributes', async() => {
+    const testContent = `<html>
+        <body>
+            <form>
+                <textarea></textarea>
+                <button></button>
+            </form>
+            <div class="aclass" onclick="alert('a')" ondblclick="alert('b')" onabort="alert('c')" accesskey="accesskey"
+                data="../" dynsrc="obc" tabindex="3">Test<div class="noway" id="id333">More Tests</div></div>
+            </div>
+        </body>
+    </html>`;
+    const testNote = createNote({ content: new JSDOM(testContent).window.document });
+    const result = await dumpNote(testNote, defaultOptions);
+    expect(result.includes('class')).toBeFalsy();
+    expect(result.includes('onclick')).toBeFalsy();
+    expect(result.includes('onabort')).toBeFalsy();
+    expect(result.includes('form')).toBeFalsy();
+    expect(result.includes('textarea')).toBeFalsy();
+})
