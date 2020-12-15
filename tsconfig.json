@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
-        "experimentalDecorators": true,
         "module": "commonjs",
         "target": "es2015",
         "declaration": true,
         "strict": true,
-        "outDir": "./dist" 
+        "outDir": "./dist",
+        "allowSyntheticDefaultImports": true
     },
     "include": [
-        "src/**/*"
+        "src/**/*", "scripts/**/*.ts"
     ]
 }

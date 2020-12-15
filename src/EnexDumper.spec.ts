@@ -58,12 +58,7 @@ test("empty export", async () => {
 
     const result = await writableString.result;
 
-    // Promise.resolve(writableString.result)
-    // writableString.result.then((result) => {
-    console.log(`Result: ${result}`);
-    // });
     expect(result).toContain('</en-export');
-    // expect(writableString.result).resolves.toContain('</en-export');
 });
 
 it('works to export a single note with only title', async () => {
@@ -77,8 +72,6 @@ it('works to export a single note with only title', async () => {
     }).subscribe(enexDumper);
 
     const result = await writableString.result;
-
-    console.log(`Result: ${result}`);
 
     const matchDocRE = /<note>.*<title>Example Title<\/title>.*<\/note>/s;
     expect(matchDocRE.test(result)).toBeTruthy();

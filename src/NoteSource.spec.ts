@@ -1,4 +1,4 @@
-import { Note, createNote } from './NoteSource';
+import { Note, createNote, createResource } from './NoteSource';
 import { JSDOM } from 'jsdom';
 
 const props: Note = {
@@ -87,4 +87,11 @@ it('works the strange behavior that a prop can be initialized and then overriden
     expect(note.content).toBeUndefined;
     expect(loadFunctionInvoked).toBeTruthy();
     expect(note.author).toEqual(props.author);
+})
+
+
+it('works to create an empty resource', () => {
+    const resource = createResource();
+    expect(resource.url).toBeUndefined();
+    expect(resource.filename).toBeUndefined();    
 })
