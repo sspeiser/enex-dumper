@@ -10,21 +10,21 @@ export async function dumpResource(resource: Resource, options: EnexDumperOption
     const md5stream = new MD5Stream();
     const base64stream = new Base64Stream();
     // const streamPromises: Promise<string | void>[] = [];
+    try {
+        if (resource.dataStream && !resource.dataStream.locked) {
+            const [md5readstream, base64readstream] = resource.dataStream.tee();
+            // if (!resource.md5) {
+            md5readstream.pipeTo(md5stream.writableStream);
 
-    if (resource.dataStream && !resource.dataStream.locked) {
-        const [md5readstream, base64readstream] = resource.dataStream.tee();
-        // if (!resource.md5) {
-        md5readstream.pipeTo(md5stream.writableStream);
-
-        // }
-        // if (!resource.base64data) {
-        base64readstream.pipeTo(base64stream.writableStream);
-        //then(() => resource.base64data = base64stream.getBase64(), console.log);
-        //streamPromises.push(base64promise);
-        // }
-        resource.md5 = await md5stream.md5;
-        resource.base64data = await base64stream.base64data;
-        return `<resource>
+            // }
+            // if (!resource.base64data) {
+            base64readstream.pipeTo(base64stream.writableStream);
+            //then(() => resource.base64data = base64stream.getBase64(), console.log);
+            //streamPromises.push(base64promise);
+            // }
+            resource.md5 = await md5stream.md5;
+            resource.base64data = await base64stream.base64data;
+            return `<resource>
                     <data encoding="base64">${resource.base64data}</data>
                     <mime>${resource.mimetype}</mime>
                     ${resource.width ? `<width>${resource.width}</width>` : ''}
@@ -33,6 +33,10 @@ export async function dumpResource(resource: Resource, options: EnexDumperOption
                         <file-name>${resource.filename}</file-name>
                     </resource-attributes>
                 </resource>`
+        }
+    } catch (error) {
+        // Probably could not read stream
+        console.log(error);
     }
     return "";
 }
@@ -50,9 +54,9 @@ class MD5Stream {
             write(chunk) {
                 return new Promise<void>((resolve) => {
                     if (chunk) {
-                        if(chunk instanceof Uint8Array) {
+                        if (chunk instanceof Uint8Array) {
                             spark.append(chunk.buffer);
-                        } 
+                        }
                     }
                     resolve();
                 });
@@ -79,9 +83,9 @@ class Base64Stream {
             write(chunk) {
                 return new Promise<void>((resolve) => {
                     if (chunk) {
-                        if(chunk instanceof Uint8Array) {
+                        if (chunk instanceof Uint8Array) {
                             base64string += bytesToBase64(chunk);
-                        } 
+                        }
                     }
                     resolve();
                 });
