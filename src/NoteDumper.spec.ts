@@ -3,12 +3,7 @@ import { createNote, createResource } from './NoteSource';
 import { JSDOM } from 'jsdom';
 import { format } from 'date-fns';
 import { EnexDumperOptions } from './EnexDumperOptions';
-import { downloadTestFiles } from './downloadTestFiles.spec';
 import { stringToStream } from './ResourceDumper.spec';
-
-beforeAll(async () => {
-    await downloadTestFiles();
-}, 180_000);
 
 const props = {
     author: 'Joe Doe',

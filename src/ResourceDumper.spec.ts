@@ -6,9 +6,11 @@ import fs  =require('fs');
 
 import { downloadTestFiles } from './downloadTestFiles.spec';
 
-beforeAll(async () => {
-    await downloadTestFiles();
-}, 180_000);
+if(!(process.env["TEST_LARGE_FILES"] === "no")) {
+    beforeAll(async () => {
+        await downloadTestFiles();
+    }, 180_000);
+}
 
 
 
@@ -48,6 +50,11 @@ it('works to dump a textual resource', async () => {
 
 
 it('works to dump a large resource', async () => {
+    if(process.env["TEST_LARGE_FILES"] === "no") {
+        expect(true).toBeTruthy();
+        return;
+    }
+
     const testData = fs.readFileSync('testdata/data/20mb.zip');
     const stream = arrayToStream(testData);
     const resource = createResource({dataStream: stream, filename: '20mb.zip'});
