@@ -47,13 +47,13 @@ it('works to dump a large resource', async () => {
         return;
     }
 
-    const testData = fs.readFileSync('testdata/data/20mb.zip');
+    const testData = fs.readFileSync('testdata/data/zip_10MB.zip');
     const stream = arrayToStream(testData);
-    const resource = createResource({dataStream: stream, filename: '20mb.zip'});
+    const resource = createResource({dataStream: stream, filename: 'zip_10MB.zip'});
     const dump = await dumpResource(resource, defaultOptions);
     
-    expect(resource.base64data?.startsWith("UEsDBBQAAAAIANi580TC")).toBeTruthy();
-    expect(resource.base64data?.endsWith("AEAAQBKAAAAKuo+AQAA")).toBeTruthy();
-    expect(resource.md5).toEqual("e91b5bbf9a9bacc563541361ebad1392");
+    expect(resource.base64data?.startsWith("UEsDBAoAAAAAAGi0XksA")).toBeTruthy();
+    expect(resource.base64data?.endsWith("AAIACIDAAAW8qIAAAA=")).toBeTruthy();
+    expect(resource.md5).toEqual("016223ee8d540137c380aca6d0f5b7c5");
     expect(dump).toContain("<resource>");
 });

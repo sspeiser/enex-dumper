@@ -25,6 +25,9 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run build --if-present
+    - run: node dist/scripts/downloadTestFiles.js
+      env:
+        TEST_LARGE_FILES: "no" 
     - run: sudo npm install -g jest
     - run: npm test
       env:
