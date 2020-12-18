@@ -114,7 +114,7 @@ export async function dumpNote(note: Note, options: EnexDumperOptions): Promise<
                 <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
                 <en-note>
                 ${content.body.innerHTML}
-                <en-note>
+                </en-note>
                 ]]>
             </content>\n`
     }
