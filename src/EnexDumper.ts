@@ -6,8 +6,8 @@ import { dumpNote } from "./NoteDumper";
 
 
 export type StringWriter = {
-    write(str: string): void;
-    close(): void;
+    write(str: string): Promise<void>;
+    close(): Promise<void>;
 }
 
 export class EnexDumper implements Observer<Note> {
@@ -25,10 +25,11 @@ export class EnexDumper implements Observer<Note> {
     }
 
     next(note: Note): void {
+
         this.noteDumps.push(dumpNote(note, this.options).then((notestr) => {
             try {
-                this.writer.write(notestr)
-            } catch(error) {
+                return this.writer.write(notestr)
+            } catch (error) {
                 console.log(`Error ${error} while writing dump ${notestr}`);
             }
         }));
@@ -42,12 +43,12 @@ export class EnexDumper implements Observer<Note> {
     complete(): void {
         Promise.all(this.noteDumps).then(() => {
             try {
-                this.writer.write('</en-export>');
-                this.writer.close();
-            } catch(error) {
+                return this.writer.write('</en-export>').then(() => { return this.writer.close() });
+            } catch (error) {
                 console.log(`Error ${error} while completing after dumping ${this.noteDumps.length} notes`);
             }
+        }).then(() => {
             if (this.resolve) this.resolve();
-        })
+        });
     }
 }

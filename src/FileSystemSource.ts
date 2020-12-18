@@ -17,15 +17,21 @@ export class WritableFile implements StringWriter {
         this.fd = fs.openSync(filename, 'w');
     }
 
-    public write(str: string): void {
-        fs.writeSync(this.fd, str);
+    public write(str: string): Promise<void> {
+        return new Promise<void>((r) => {
+            fs.writeSync(this.fd, str);
+            r();
+        });
     }
 
-    public close(): void {
-        fs.closeSync(this.fd);
-        if (this.resolve) {
-            this.resolve();
-        }
+    public close(): Promise<void> {
+        return new Promise<void>((r) => {
+            fs.closeSync(this.fd);
+            if (this.resolve) {
+                this.resolve();
+            }
+            r();
+        });
     }
 }
 

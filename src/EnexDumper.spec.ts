@@ -12,21 +12,24 @@ class WritableString {
     private writableStream: WritableStream<string | void>;
 
     constructor() {
-        this.result = new Promise<string>((resolve) => this.resolve = resolve);
+        this.result = new Promise<string>((r) => this.resolve = r);
         const strings = this.strings;
         const resolve = this.resolve;
         this.writableStream = new WritableStream({
             write(chunk: string | void) {
-                return new Promise<void>((resolve) => {
+                return new Promise<void>((r) => {
                     if (chunk) {
                         strings.push(chunk);
                     }
-                    resolve();
+                    r();
                 });
             },
             close() {
-                if (resolve)
-                    resolve(strings.join(''));
+                return new Promise<void>((r) => {
+                    if (resolve)
+                        resolve(strings.join(''));
+                    r();
+                });
             }
         });
     }
@@ -67,7 +70,7 @@ it('works to export a single note with only title', async () => {
     const enexDumper = new EnexDumper(writer);
 
     new Observable<Note>(subscriber => {
-        subscriber.next(createNote({title: "Example Title"}));
+        subscriber.next(createNote({ title: "Example Title" }));
         subscriber.complete();
     }).subscribe(enexDumper);
 
