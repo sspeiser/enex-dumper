@@ -74,8 +74,8 @@ function cleanHTML(content: HTMLDocument) {
         }
     }
     forbiddenElements.forEach((element) => element.remove());
-    // Remove all forbidden attributes
-    const forbiddenAttributes = ['id', 'class', 'onclick', 'ondblclick', 'on*', 'accesskey', 'data', 'dynsrc', 'tabindex'];
+    // Remove all forbidden attributes + remove styles!
+    const forbiddenAttributes = ['id', 'class', 'onclick', 'ondblclick', 'on*', 'accesskey', 'data', 'dynsrc', 'tabindex', 'style'];
     for(const element of content.body.getElementsByTagName('*')) {
         for(const attribute of element.attributes) {
             if(attribute.name.startsWith('on') && !forbiddenAttributes.includes(attribute.name)) {
