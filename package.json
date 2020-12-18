@@ -1,6 +1,6 @@
 {
   "name": "enex-dumper",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Create Evernote export file (enex) from HTML notes and resources",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

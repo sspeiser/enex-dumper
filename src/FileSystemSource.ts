@@ -49,7 +49,7 @@ function fileToStream(path: string) {
 }
 
 function loadResource(noteFile: string) {
-    return async (resource: Resource) => {
+    return (resource: Resource) => {
         if (resource.url) {
 
             const iSlash = noteFile.lastIndexOf('/');
