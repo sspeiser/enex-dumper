@@ -130,3 +130,5 @@ yarn-error.log*
 
 #
 testdata/data
+
+tmp
