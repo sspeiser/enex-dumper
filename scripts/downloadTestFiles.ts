@@ -17,7 +17,7 @@ const testFiles =
 
 export default async function downloadTestFiles(): Promise<void> {
     const promises: Promise<void>[] = [];
-    if (!fs.existsSync('testdata/data/lock')) {
+    if (!fs.existsSync('testdata/data')) {
         fs.mkdirSync('testdata/data', { recursive: true });
     }
 
