@@ -27,11 +27,11 @@ export class EnexDumper implements Observer<Note> {
     next(note: Note): void {
 
         this.noteDumps.push(dumpNote(note, this.options).then((notestr) => {
-            try {
+            // try {
                 return this.writer.write(notestr)
-            } catch (error) {
-                console.log(`Error ${error} while writing dump ${notestr}`);
-            }
+            // } catch (error) {
+                // console.log(`Error ${error} while writing dump ${notestr}`);
+            // }
         }));
     }
 
@@ -42,11 +42,11 @@ export class EnexDumper implements Observer<Note> {
 
     complete(): void {
         Promise.all(this.noteDumps).then(() => {
-            try {
+            // try {
                 return this.writer.write('</en-export>').then(() => { return this.writer.close() });
-            } catch (error) {
-                console.log(`Error ${error} while completing after dumping ${this.noteDumps.length} notes`);
-            }
+            // } catch (error) {
+                // console.log(`Error ${error} while completing after dumping ${this.noteDumps.length} notes`);
+            // }
         }).then(() => {
             if (this.resolve) this.resolve();
         });
